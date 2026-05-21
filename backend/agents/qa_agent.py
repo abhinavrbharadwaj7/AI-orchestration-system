@@ -12,8 +12,10 @@ def run_qa_agent(state):
 
     prompt = f"""
 Validate this generated result against the objective.
-If it passes, return exactly one word: PASS.
-If it fails, return FAIL, followed by a new line, and then a detailed explanation of why it failed and how to fix it.
+Analyze the result carefully to ensure it fully meets the objective.
+If the result successfully achieves the objective, return exactly one word: PASS.
+If the result fails to meet the objective in any way, return FAIL on the first line.
+On the subsequent lines, provide a clear, detailed explanation of exactly why it failed, what is missing or incorrect, and actionable steps to fix it.
 
 Objective: {state.objective}
 Result:
