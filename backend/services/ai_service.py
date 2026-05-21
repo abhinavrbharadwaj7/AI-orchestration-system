@@ -1,6 +1,6 @@
 import json
 import os
-from urllib import request
+import httpx
 
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -26,16 +26,15 @@ def call_ai(prompt: str, system_message: str = "You are a helpful AI assistant."
         "max_tokens": MAX_TOKENS,
     }
 
-    body = json.dumps(payload).encode("utf-8")
     headers = {
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
-    api_request = request.Request(OPENROUTER_URL, data=body, headers=headers, method="POST")
 
-    with request.urlopen(api_request, timeout=REQUEST_TIMEOUT_SECONDS) as response:
-        response_body = response.read().decode("utf-8")
-        data = json.loads(response_body)
+    with httpx.Client(timeout=REQUEST_TIMEOUT_SECONDS) as client:
+        response = client.post(OPENROUTER_URL, json=payload, headers=headers)
+        response.raise_for_status()
+        data = response.json()
         return data["choices"][0]["message"]["content"].strip()
 
 

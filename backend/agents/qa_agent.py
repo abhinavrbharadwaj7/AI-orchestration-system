@@ -12,17 +12,33 @@ def run_qa_agent(state):
 
     prompt = f"""
 Validate this generated result against the objective.
-Return exactly one word: PASS or FAIL.
+Analyze the result carefully to ensure it fully meets the objective.
+If the result successfully achieves the objective, return exactly one word: PASS.
+If the result fails to meet the objective in any way, return FAIL on the first line.
+On the subsequent lines, provide a clear, detailed explanation of exactly why it failed, what is missing or incorrect, and actionable steps to fix it.
 
 Objective: {state.objective}
 Result:
 {state.result}
 """
 
-    raw_status = call_ai(prompt, QA_SYSTEM_MESSAGE).strip().upper()
-    state.qa_status = PASS_STATUS if PASS_STATUS in raw_status else FAIL_STATUS
+    response = call_ai(prompt, QA_SYSTEM_MESSAGE).strip()
+
+    if response.upper().startswith(PASS_STATUS):
+        state.qa_status = PASS_STATUS
+        state.qa_feedback = ""
+    else:
+        state.qa_status = FAIL_STATUS
+        # Extract feedback if available (everything after the first line)
+        parts = response.split('\n', 1)
+        if len(parts) > 1:
+            state.qa_feedback = parts[1].strip()
+        else:
+            state.qa_feedback = response
 
     add_log(state, f"QA Agent status: {state.qa_status}")
+    if state.qa_feedback:
+        add_log(state, f"QA Agent feedback: {state.qa_feedback}")
     add_log(state, "QA Agent finished")
     return state
 
