@@ -43,7 +43,16 @@ def _local_fallback_response(prompt: str) -> str:
         goal = _extract_after_label(prompt, "User goal:")
         return f"Build a simple, working solution for: {goal}"
 
-    if "Break this objective into implementation tasks" in prompt:
+    if "Break this objective into product features" in prompt:
+        return json.dumps(
+            [
+                "Core functionality matching the goal",
+                "Basic user interface or CLI",
+                "Error handling and edge cases",
+            ]
+        )
+
+    if "Break these product features into implementation tasks" in prompt:
         return json.dumps(
             [
                 "Understand the requested outcome",
@@ -59,6 +68,10 @@ def _local_fallback_response(prompt: str) -> str:
 
     if "Validate this generated result" in prompt:
         return "PASS"
+
+    if "Write an engaging launch announcement" in prompt:
+        objective = _extract_after_label(prompt, "Objective:")
+        return f"Exciting news! We have just completed: {objective}. Try it out today!"
 
     return "No local fallback response matched this prompt."
 

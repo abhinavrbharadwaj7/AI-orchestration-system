@@ -5,22 +5,26 @@ from dataclasses import dataclass, field
 class OrchestratorState:
     goal: str = ""
     objective: str = ""
+    features: list[str] = field(default_factory=list)
     tasks: list[str] = field(default_factory=list)
     result: str = ""
     qa_status: str = ""
     qa_feedback: str = ""
     retry_count: int = 0
+    marketing_copy: str = ""
     logs: list[str] = field(default_factory=list)
 
     def to_dict(self) -> dict:
         return {
             "goal": self.goal,
             "objective": self.objective,
+            "features": self.features,
             "tasks": self.tasks,
             "result": self.result,
             "qa_status": self.qa_status,
             "qa_feedback": self.qa_feedback,
             "retry_count": self.retry_count,
+            "marketing_copy": self.marketing_copy,
             "logs": self.logs,
         }
 

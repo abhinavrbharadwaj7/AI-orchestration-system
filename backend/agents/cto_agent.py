@@ -4,18 +4,20 @@ from backend.orchestrator.logger import add_log
 from backend.services.ai_service import call_ai
 
 
-CTO_SYSTEM_MESSAGE = "You are the CTO agent. Break objectives into simple implementation tasks."
+CTO_SYSTEM_MESSAGE = "You are the CTO agent. Break product features into simple implementation tasks."
 
 
 def run_cto_agent(state):
     add_log(state, "CTO Agent started")
 
+    features_list = "\n".join(f"- {f}" for f in state.features)
     prompt = f"""
-Break this objective into implementation tasks.
+Break these product features into implementation tasks.
 Return ONLY a JSON array of strings.
 Do not include markdown.
 
-Objective: {state.objective}
+Features:
+{features_list}
 """
 
     raw_tasks = call_ai(prompt, CTO_SYSTEM_MESSAGE).strip()

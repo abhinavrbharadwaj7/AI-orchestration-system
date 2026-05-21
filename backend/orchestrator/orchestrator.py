@@ -1,7 +1,9 @@
 from backend.agents.ceo_agent import run_ceo_agent
+from backend.agents.pm_agent import run_pm_agent
 from backend.agents.cto_agent import run_cto_agent
 from backend.agents.dev_agent import run_dev_agent
 from backend.agents.qa_agent import PASS_STATUS, run_qa_agent
+from backend.agents.marketing_agent import run_marketing_agent
 from backend.orchestrator.logger import add_log
 from backend.orchestrator.state import create_initial_state
 
@@ -16,6 +18,7 @@ def run_orchestrator(goal: str):
     add_log(state, f"User goal: {state.goal}")
 
     state = run_ceo_agent(state)
+    state = run_pm_agent(state)
     state = run_cto_agent(state)
 
     while state.retry_count < MAX_RETRY_COUNT:
@@ -23,7 +26,9 @@ def run_orchestrator(goal: str):
         state = run_qa_agent(state)
 
         if state.qa_status == PASS_STATUS:
-            add_log(state, "QA passed. Orchestrator finished successfully")
+            add_log(state, "QA passed.")
+            state = run_marketing_agent(state)
+            add_log(state, "Orchestrator finished successfully")
             return state
 
         state.retry_count += 1
